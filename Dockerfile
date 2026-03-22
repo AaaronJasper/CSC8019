@@ -3,22 +3,13 @@ FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-# copy project
 COPY pom.xml .
-COPY src ./src
-
-# build jar
-RUN mvn clean package -DskipTests
+RUN mvn dependency:go-offline
 
 
 # ---------- Run Stage ----------
-FROM eclipse-temurin:21-jdk
+FROM maven:3.9.9-eclipse-temurin-21
 
 WORKDIR /app
 
-# copy jar from builder
-COPY --from=builder /app/target/*.jar app.jar
-
-EXPOSE 8080
-
-ENTRYPOINT ["java","-jar","app.jar"]
+CMD ["mvn", "spring-boot:run"]

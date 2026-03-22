@@ -26,6 +26,10 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/demo
       SPRING_DATASOURCE_USERNAME: spring
       SPRING_DATASOURCE_PASSWORD: spring
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true
     restart: always
 
 volumes:
