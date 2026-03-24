@@ -72,6 +72,11 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(404).body(new ApiErrorResponse(404, "Not Found", ex.getMessage()));
     }
 
+    @ExceptionHandler(MenuItemsNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleMenuItemsNotFound(MenuItemsNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ApiErrorResponse(404, "Not Found", ex.getMessage()));
+    }
+
     @ExceptionHandler(NoFieldsProvidedException.class)
     public ResponseEntity<?> handleNoFieldsProvided(NoFieldsProvidedException ex, HttpServletRequest request) {
         if ("PUT".equalsIgnoreCase(request.getMethod())) {
