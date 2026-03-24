@@ -8,6 +8,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "menu_items")
@@ -37,6 +41,9 @@ public class MenuItem {
 
     @Column(name = "item_count")
     private Integer itemCount;
+
+    @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MenuItemSizePrice> sizePrices = new ArrayList<>();
 
     public MenuItem() {}
 
@@ -112,5 +119,13 @@ public class MenuItem {
 
     public void setItemCount(Integer itemCount) {
         this.itemCount = itemCount;
+    }
+
+    public List<MenuItemSizePrice> getSizePrices() {
+        return sizePrices;
+    }
+
+    public void setSizePrices(List<MenuItemSizePrice> sizePrices) {
+        this.sizePrices = sizePrices;
     }
 }
