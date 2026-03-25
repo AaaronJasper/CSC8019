@@ -7,11 +7,12 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import com.example.demo.dto.ApiErrorResponse;
 import com.example.demo.dto.PutErrorResponse;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
@@ -66,6 +67,14 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(MenuItemNotFoundException.class)
     public ResponseEntity<?> handleMenuItemNotFound(MenuItemNotFoundException ex, HttpServletRequest request) {
+        if ("PUT".equalsIgnoreCase(request.getMethod())) {
+            return ResponseEntity.status(404).body(PutErrorResponse.notFound(ex.getMessage()));
+        }
+        return ResponseEntity.status(404).body(new ApiErrorResponse(404, "Not Found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(MenuItemSizePriceNotFoundException.class)
+    public ResponseEntity<?> handleMenuItemSizePriceNotFound(MenuItemSizePriceNotFoundException ex, HttpServletRequest request) {
         if ("PUT".equalsIgnoreCase(request.getMethod())) {
             return ResponseEntity.status(404).body(PutErrorResponse.notFound(ex.getMessage()));
         }
