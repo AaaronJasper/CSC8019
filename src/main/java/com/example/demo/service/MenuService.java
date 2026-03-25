@@ -4,9 +4,11 @@ import com.example.demo.dto.MenuItemUpdateRequest;
 import com.example.demo.dto.MenuItemRequest;
 import com.example.demo.entity.MenuItem;
 import com.example.demo.exception.MenuItemNotFoundException;
+import com.example.demo.exception.MenuItemsNotFoundException;
 import com.example.demo.exception.NoFieldsProvidedException;
 import com.example.demo.repository.MenuItemRepository;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class MenuService {
@@ -62,6 +64,19 @@ public class MenuService {
         }
 
         return menuItemRepository.save(item);
+    }
+
+    /**
+     * Fetch all menu items.
+     *
+     * @throws MenuItemsNotFoundException if no menu items exist
+     */
+    public List<MenuItem> getAllMenuItems() {
+        List<MenuItem> items = menuItemRepository.findAll();
+        if (items.isEmpty()) {
+            throw new MenuItemsNotFoundException();
+        }
+        return items;
     }
 
     /**

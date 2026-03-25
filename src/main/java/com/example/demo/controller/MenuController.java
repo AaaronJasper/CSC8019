@@ -16,25 +16,22 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import com.example.demo.dto.MenuItemRequest;
 import com.example.demo.dto.MenuItemUpdateRequest;
 import com.example.demo.entity.MenuItem;
-import com.example.demo.repository.MenuItemRepository;
 import com.example.demo.service.MenuService;
 import jakarta.validation.Valid;
 
 @RestController
 public class MenuController {
 
-    private final MenuItemRepository menuItemRepository;
     private final MenuService menuService;
 
-    public MenuController(MenuItemRepository menuItemRepository, MenuService menuService) {
-        this.menuItemRepository = menuItemRepository;
+    public MenuController(MenuService menuService) {
         this.menuService = menuService;
     }
 
     // ===== GET /api/menu =====
     @GetMapping("/api/menu")
-    public List<MenuItem> getAllMenuItems() {
-        return menuItemRepository.findAll();
+    public ResponseEntity<List<MenuItem>> getAllMenuItems() {
+        return ResponseEntity.ok(menuService.getAllMenuItems());
     }
 
     // ===== GET /api/menu/{id} =====
