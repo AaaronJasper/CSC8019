@@ -7,5 +7,5 @@ public enum OrderStatus {
     PREPARING,
     READY,
     COLLECTED,
-    CANCELLED//if soeone cancelled the order beforehand
+    CANCELLED//if someone cancelled the order beforehand
 }
