@@ -1,5 +1,16 @@
 package com.example.demo.entity;
+/*
+I have added a seperate columns for the small and large price. Please add it in the constructor and connect it with the array is required, although I think its not required now:))
+I'll implement the fields in the service layer with the if-else condition
 
+###important#### IsAvailable field requires a method. 
+Something like in the morning a staff can add the available quntity once, and then as
+customers keep buying the drink the number gets subtracted (total minus buyed quantity)
+
+###important### rating field also reuires a method
+we need to add a method where customers can give a rating and the system can show an average of all
+the ratings got
+*/
 import java.math.BigDecimal;
 
 import jakarta.persistence.Column;
@@ -41,6 +52,12 @@ public class MenuItem {
 
     @Column(name = "item_count")
     private Integer itemCount;
+
+    @Column(nullable = false, precision = 8, scale = 2)
+    private BigDecimal regularPrice;
+
+    @Column(nullable = false, precision = 8, scale = 2)
+    private BigDecimal largePrice;
 
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItemSizePrice> sizePrices = new ArrayList<>();
@@ -127,5 +144,21 @@ public class MenuItem {
 
     public void setSizePrices(List<MenuItemSizePrice> sizePrices) {
         this.sizePrices = sizePrices;
+    }
+
+    public BigDecimal getRegularPrice() {
+        return regularPrice;
+    }
+
+    public void setRegularPrice(BigDecimal regularPrice) {
+        this.regularPrice = regularPrice;
+    }
+
+    public BigDecimal getLargePrice() {
+        return largePrice;
+    }
+
+    public void setLargePrice(BigDecimal largePrice) {
+        this.largePrice = largePrice;
     }
 }
