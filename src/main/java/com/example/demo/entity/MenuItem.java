@@ -146,16 +146,22 @@ public class MenuItem {
         this.sizePrices = sizePrices;
     }
 
-    public BigDecimal getRegularPrice() {
-        return regularPrice;
+    public MenuItemSizePrice getRegularPrice() {
+        return sizePrices.stream()
+                .filter(sp -> "regular".equalsIgnoreCase(sp.getSize()))
+                .findFirst()
+                .orElse(null);
     }
 
     public void setRegularPrice(BigDecimal regularPrice) {
         this.regularPrice = regularPrice;
     }
 
-    public BigDecimal getLargePrice() {
-        return largePrice;
+    public MenuItemSizePrice getLargePrice() {
+        return sizePrices.stream()
+                .filter(sp -> "large".equalsIgnoreCase(sp.getSize()))
+                .findFirst()
+                .orElse(null);
     }
 
     public void setLargePrice(BigDecimal largePrice) {
