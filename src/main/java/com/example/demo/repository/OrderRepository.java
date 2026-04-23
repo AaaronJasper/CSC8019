@@ -13,5 +13,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByStatus(OrderStatus status);
     List<Order> findByStatusIn(List<OrderStatus> statuses);
     List<Order> findByStatusAndLastStatusChangeBefore(OrderStatus status, LocalDateTime cutoffTime);
-
+    List<Order> findByStatusInAndLastStatusChangeBefore(List<OrderStatus> statuses, LocalDateTime cutoffTime);
+    List<Order> findByStatusInOrderByOrderTimeDesc(List<OrderStatus> statuses);
+    List<Order> findByArchivedFalseOrderByOrderTimeDesc();
+    List<Order> findByArchivedTrueOrderByOrderTimeDesc();
 }

@@ -13,6 +13,10 @@ public class Customer {
     private String email;
     private String password;
 
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public Long getId() {
         return id;
     }
@@ -41,4 +45,6 @@ public class Customer {
         this.password = password;
     }
 
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 }

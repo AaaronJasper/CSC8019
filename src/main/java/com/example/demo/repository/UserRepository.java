@@ -4,8 +4,8 @@ import com.example.demo.entity.User;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<User, Long>{
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User>FindByEmail(String email);
+    Optional<User> findByEmail(String email);
     boolean existsByEmail(String email);
 }

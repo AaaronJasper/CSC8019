@@ -53,10 +53,10 @@ public class MenuItem {
     @Column(name = "item_count")
     private Integer itemCount;
 
-    @Column(nullable = false, precision = 8, scale = 2)
+    @Column(nullable = true, precision = 8, scale = 2)
     private BigDecimal regularPrice;
 
-    @Column(nullable = false, precision = 8, scale = 2)
+    @Column(nullable = true, precision = 8, scale = 2)
     private BigDecimal largePrice;
 
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)

@@ -8,15 +8,22 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "orders")
 
+
 public class Order {
     @Id//helps gives a uniquely identifiable number to each order
     @GeneratedValue(strategy = GenerationType.IDENTITY)//helps automatically assign the unque id to AN ORDER using identity column
     private Long id;
+
+    public Order() {}
 
     /**
      * many to one because many orders can refer a single customer(meaning one customer record)
@@ -24,6 +31,7 @@ public class Order {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_id")
+    @JsonBackReference("user-orders")
     private User customer;
 
     @Column(length = 100)
@@ -62,6 +70,9 @@ public class Order {
     private boolean loyaltyRedeemed = false;
 
     @Column(nullable = false)
+    private boolean archived = false;
+
+    @Column(nullable = false)
     private LocalDateTime lastStatusChange;
     /**
      * one order has many items
@@ -69,7 +80,7 @@ public class Order {
      * if an item is deleted from the order, it gets deleted from the database too(orphanRemoval)
      */
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-
+    @JsonManagedReference
     private List<OrderItem> items = new ArrayList<>();//this adds and stores items in an order
 
     /*
@@ -198,6 +209,14 @@ public class Order {
 
     public void setLoyaltyRedeemed(boolean loyaltyRedeemed) {
         this.loyaltyRedeemed = loyaltyRedeemed;
+    }
+
+    public boolean isArchived() {
+        return archived;
+    }
+
+    public void setArchived(boolean archived) {
+        this.archived = archived;
     }
 
     public List<OrderItem> getItems() {

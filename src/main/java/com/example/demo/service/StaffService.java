@@ -27,11 +27,13 @@ public class StaffService {
     );
 
     public List<Order> getActiveOrders() {
-        return orderRepository.findByArchivedFalseOrderByCreatedAtDesc();
+        return orderRepository.findByStatusInOrderByOrderTimeDesc(
+                List.of(OrderStatus.NEW, OrderStatus.ACCEPTED, OrderStatus.PREPARING, OrderStatus.READY)
+        );
     }
 
     public List<Order> getArchivedOrders() {
-        return orderRepository.findByArchivedTrueOrderByCreatedAtDesc();
+        return orderRepository.findByArchivedTrueOrderByOrderTimeDesc();
     }
 
     public Order updateOrderStatus(Long orderId, OrderStatus newStatus) {
@@ -56,6 +58,7 @@ public class StaffService {
         }
 
         order.setStatus(newStatus);
+        order.setLastStatusChange(LocalDateTime.now());
 
         if (newStatus == OrderStatus.COLLECTED || newStatus == OrderStatus.CANCELLED) {
             order.setArchived(true);
@@ -68,7 +71,7 @@ public class StaffService {
     public void autoCancel() {
         LocalDateTime cutoff = LocalDateTime.now().minusMinutes(15);
 
-        List<Order> overdueOrders = orderRepository.findByStatusInAndPickupTimeBefore(
+        List<Order> overdueOrders = orderRepository.findByStatusInAndLastStatusChangeBefore(
                 List.of(OrderStatus.NEW, OrderStatus.ACCEPTED),
                 cutoff
         );

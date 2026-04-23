@@ -12,4 +12,6 @@ FROM maven:3.9.9-eclipse-temurin-21
 
 WORKDIR /app
 
+COPY --from=builder /root/.m2 /root/.m2
+
 CMD ["mvn", "spring-boot:run"]

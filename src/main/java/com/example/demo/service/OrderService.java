@@ -6,7 +6,6 @@ import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,7 +42,7 @@ public class OrderService {
         this.staffRepository = staffRepository;
     }
 
-    public void userRoleDefinition(User email){
+    public void userRoleDefinition(String email){
         User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No user found"));
 
         switch(user.getRole()){
@@ -58,7 +57,7 @@ public class OrderService {
     }
 
     private void connectStaff(User user){
-        Staff staff = staffRepository.findByEmail(user.getEmail()).orElseThrow(() -> new RuntimeException("Staff not found"));
+        Staff staff = staffRepository.findByUsername(user.getName()).orElseThrow(() -> new RuntimeException("Staff not found"));
     }
 
 
@@ -85,13 +84,18 @@ public class OrderService {
             }
 
             String size = sizes.get(i);
-            BigDecimal price;
+            MenuItemSizePrice sizePrice;
 
             if(size.equalsIgnoreCase("LARGE")){
-                price = menuItem.getLargePrice();
+                sizePrice = menuItem.getLargePrice();
             }else{
-                price = menuItem.getRegularPrice();
+                sizePrice = menuItem.getRegularPrice();
             }
+
+            if (sizePrice == null) {
+                throw new RuntimeException(menuItem.getName() + " does not have size: " + size);
+            }
+            BigDecimal price = sizePrice.getPrice();
 
 
             OrderItem item = new OrderItem(order, menuItem, size, quantities.get(i), price );
