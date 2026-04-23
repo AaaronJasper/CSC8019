@@ -1,87 +1,138 @@
 package com.example.demo.entity;
 
-import java.util.Collection;
+import com.example.demo.repository.StaffRepository;
+import jakarta.persistence.*;
 import java.util.List;
+import java.time.LocalDateTime;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-public class User implements UserDetails {
+@Table(name = "users")
+
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @Column(nullable = false)
-    private String firstname;
-
-    @Column(nullable = false)
-    private String lastname;
+    @Column(nullable = false, unique = true, length = 150)
+    private String email;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false, unique = true)
-    private String email;
+    @Column(nullable = false, length = 80)
+    private String name;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
 
-    // ----------------------
-    // UserDetails methods
-    // ----------------------
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(role.name()));
+    @Column(nullable = false)
+    private int loyaltyCount = 0;
+
+    @Column(nullable = false)
+    private int totalCompletedOrders = 0;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "customer", fetch =  FetchType.LAZY)
+    private List<Order> orders;
+
+    @PrePersist
+    protected void onCreate(){
+        createdAt = LocalDateTime.now();
     }
 
-    @Override
-    public String getUsername() {
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Customer customer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Staff staff;
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Staff getStaff() {
+        return staff;
+    }
+
+    public void setStaff(Staff staff) {
+        this.staff = staff;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
         return email;
     }
 
-    @Override
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public String getPassword() {
         return password;
     }
 
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public Role getRole() {
+        return role;
     }
 
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public int getLoyaltyCount() {
+        return loyaltyCount;
+    }
+
+    public void setLoyaltyCount(int i) {
+    }
+
+    public int getTotalCompletedOrders() {
+        return 0;
+    }
+
+    public void setTotalCompletedOrders(int i) {
+    }
 }
