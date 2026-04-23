@@ -1,54 +1,105 @@
 package com.example.demo.entity;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
 @Table(name = "order_items")
-public class OrderItem {
 
+public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // The order this item belongs to
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false)
-    @JsonIgnore
+    @JoinColumn(name = "order_id", nullable = false)//every item will belong to an order
     private Order order;
 
-    // Name of the menu item ordered
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_item_id", nullable = false)
+    private MenuItem menuItem;//identifies the actual product
+
+    @Column(nullable = false, length = 10)
+    private String size;//size of the beverage(regular/large)
+
     @Column(nullable = false)
-    private String menuItemName;
+    private int quantity;//quantity of an item
 
-    // Size selected (e.g. Regular, Large)
-    @Column(nullable = false)
-    private String size;
+    @Column(nullable = false, precision = 6, scale = 2)
+    private BigDecimal unitPrice;//one unit's price
 
-    // Quantity of this item ordered
-    @Column(nullable = false)
-    private int quantity;
+    /*
+    multiply() used to caculate bigdecimal items oneunitprice of an item multiplied by quantity
+     */
+    public BigDecimal getLineTotal(){
+        return unitPrice.multiply(BigDecimal.valueOf(quantity));
+    }
 
-    // Price per item at the time of ordering
-    @Column(nullable = false, precision = 8, scale = 2)
-    private BigDecimal price;
+    //constructor
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public OrderItem(Long id, Order order, MenuItem menuItem, String size, int quantity, BigDecimal unitPrice) {
+        this.id = id;
+        this.order = order;
+        this.menuItem = menuItem;
+        this.size = size;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+    }
 
-    public Order getOrder() { return order; }
-    public void setOrder(Order order) { this.order = order; }
+    public OrderItem(Order order, MenuItem menuItem, String size, int quantity, BigDecimal unitPrice) {
+        this.order = order;
+        this.menuItem = menuItem;
+        this.size = size;
+        this.quantity = quantity;
+        this.unitPrice = unitPrice;
+    }
 
-    public String getMenuItemName() { return menuItemName; }
-    public void setMenuItemName(String menuItemName) { this.menuItemName = menuItemName; }
+    //getters and setters
 
-    public String getSize() { return size; }
-    public void setSize(String size) { this.size = size; }
+    public Long getId() {
+        return id;
+    }
 
-    public int getQuantity() { return quantity; }
-    public void setQuantity(int quantity) { this.quantity = quantity; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public BigDecimal getPrice() { return price; }
-    public void setPrice(BigDecimal price) { this.price = price; }
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
+    public MenuItem getMenuItem() {
+        return menuItem;
+    }
+
+    public void setMenuItem(MenuItem menuItem) {
+        this.menuItem = menuItem;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    public BigDecimal getUnitPrice() {
+        return unitPrice;
+    }
+
+    public void setUnitPrice(BigDecimal unitPrice) {
+        this.unitPrice = unitPrice;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
 }
