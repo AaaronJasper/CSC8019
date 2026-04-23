@@ -1,12 +1,5 @@
 package com.example.demo.service;
 
-/* 2 problems + 1 task
-+ the size price as of now is getsizeprice menuitem one, but after jasper updates size to small and large seperately
-bring a disticntion logic here probably if else like if size = large getlargeprice and vice versa
-+ also the logic for loyalty is left, as of now user has a field but customer and staff class does not either connect them
-in a way that its included or ask them to include or find a way for the loyalty logic to work
-+add comments to order controller and service for better understanding also check if entitylayer class has some complex field name which needs commenting
- */
 import com.example.demo.entity.*;
 import com.example.demo.repository.*;
 import java.util.List;
@@ -50,8 +43,8 @@ public class OrderService {
         this.staffRepository = staffRepository;
     }
 
-    public void userRoleDefinition(Long userId){
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("No user found"));
+    public void userRoleDefinition(User email){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No user found"));
 
         switch(user.getRole()){
             case CUSTOMER -> connectCustomer(user);
@@ -65,7 +58,7 @@ public class OrderService {
     }
 
     private void connectStaff(User user){
-        Staff staff = staffRepository.findById(user.getId()).orElseThrow(() -> new RuntimeException("Staff not found"));
+        Staff staff = staffRepository.findByEmail(user.getEmail()).orElseThrow(() -> new RuntimeException("Staff not found"));
     }
 
 
