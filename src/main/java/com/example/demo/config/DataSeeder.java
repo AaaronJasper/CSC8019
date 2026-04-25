@@ -3,6 +3,8 @@ package com.example.demo.config;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,12 +16,14 @@ import com.example.demo.repository.MenuItemRepository;
 @Configuration
 public class DataSeeder {
 
+    private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
+
     @Bean
     CommandLineRunner seedMenu(MenuItemRepository repo) {
         return args -> {
 
             if (repo.count() > 0) {
-                System.out.println("⚠️ Menu already seeded");
+                log.info("Menu already seeded");
                 return;
             }
 
@@ -118,7 +122,7 @@ public class DataSeeder {
 
             repo.saveAll(items);
 
-            System.out.println("✅ Default menu items inserted!");
+            log.info("Default menu items inserted");
         };
     }
 }

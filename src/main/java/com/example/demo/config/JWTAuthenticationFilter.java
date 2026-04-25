@@ -1,5 +1,7 @@
 package com.example.demo.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,6 +22,8 @@ import com.example.demo.service.TokenBlacklistService;
 @Component
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
+
     private final JWTService jwtService;
     private final UserDetailsService userDetailsService;
     private final TokenBlacklistService tokenBlacklistService;
@@ -34,7 +38,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-        System.out.println("JWT filter checking path: " + path);                                                                                                  
+        log.debug("JWT filter checking path: {}", path);
         return path.equals("/api/v1/auth/register") || path.equals("/api/v1/auth/authenticate");
     }
 
