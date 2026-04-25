@@ -18,7 +18,6 @@ public class OrderService {
     private final OrderItemRepo orderItemRepo;
     private final UserRepository userRepository;
     private final MenuItemRepository menuItemRepository;
-    private final CustomerRepository customerRepository;
     private final StaffRepository staffRepository;
 
     @Value("${loyalty.buy.count}")//this is to read loyalty count rule and threshold from application.properties
@@ -33,31 +32,12 @@ public class OrderService {
 
 
     //constructor to take in repositories
-    public OrderService(OrderRepository orderRepository, OrderItemRepo orderItemRepo, UserRepository userRepository, MenuItemRepository menuItemRepository, CustomerRepository customerRepository, StaffRepository staffRepository) {
+    public OrderService(OrderRepository orderRepository, OrderItemRepo orderItemRepo, UserRepository userRepository, MenuItemRepository menuItemRepository, StaffRepository staffRepository) {
         this.orderRepository = orderRepository;
         this.orderItemRepo = orderItemRepo;
         this.userRepository = userRepository;
         this.menuItemRepository = menuItemRepository;
-        this.customerRepository = customerRepository;
         this.staffRepository = staffRepository;
-    }
-
-    public void userRoleDefinition(String email){
-        User user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("No user found"));
-
-        switch(user.getRole()){
-            case CUSTOMER -> connectCustomer(user);
-            case STAFF -> connectStaff(user);
-            default -> throw new RuntimeException("role not found");
-        }
-    }
-
-    private void connectCustomer(User user){
-        Customer customer = customerRepository.findByEmail(user.getEmail()).orElseThrow(() -> new RuntimeException("Customer not found"));
-    }
-
-    private void connectStaff(User user){
-        Staff staff = staffRepository.findByUsername(user.getName()).orElseThrow(() -> new RuntimeException("Staff not found"));
     }
 
 
