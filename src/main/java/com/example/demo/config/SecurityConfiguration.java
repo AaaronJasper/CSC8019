@@ -47,6 +47,7 @@ public class SecurityConfiguration {
                 .requestMatchers("/api/v1/auth/register").permitAll()
                 .requestMatchers("/api/v1/auth/authenticate").permitAll()
                 .requestMatchers("/api/menu/**", "/api/orders/**", "/api/staff/**").permitAll()
+                .requestMatchers("/api/menu/**", "/api/orders/**", "/api/staff/**", "/api/payments/**" ).permitAll()
                 // .requestMatchers("/api/v1/auth/logout").permitAll()
                 .requestMatchers("/error").permitAll()
                 .anyRequest().authenticated()
