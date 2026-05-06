@@ -13,6 +13,7 @@ the ratings got
 */
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,12 +53,6 @@ public class MenuItem {
 
     @Column(name = "item_count")
     private Integer itemCount;
-
-    @Column(nullable = true, precision = 8, scale = 2)
-    private BigDecimal regularPrice;
-
-    @Column(nullable = true, precision = 8, scale = 2)
-    private BigDecimal largePrice;
 
     @OneToMany(mappedBy = "menuItem", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MenuItemSizePrice> sizePrices = new ArrayList<>();
@@ -146,6 +141,7 @@ public class MenuItem {
         this.sizePrices = sizePrices;
     }
 
+    @JsonIgnore
     public MenuItemSizePrice getRegularPrice() {
         return sizePrices.stream()
                 .filter(sp -> "regular".equalsIgnoreCase(sp.getSize()))
@@ -153,18 +149,11 @@ public class MenuItem {
                 .orElse(null);
     }
 
-    public void setRegularPrice(BigDecimal regularPrice) {
-        this.regularPrice = regularPrice;
-    }
-
+    @JsonIgnore
     public MenuItemSizePrice getLargePrice() {
         return sizePrices.stream()
                 .filter(sp -> "large".equalsIgnoreCase(sp.getSize()))
                 .findFirst()
                 .orElse(null);
-    }
-
-    public void setLargePrice(BigDecimal largePrice) {
-        this.largePrice = largePrice;
     }
 }

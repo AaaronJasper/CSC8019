@@ -86,6 +86,16 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(404).body(new ApiErrorResponse(404, "Not Found", ex.getMessage()));
     }
 
+    @ExceptionHandler(OrderNotFoundException.class)
+    public ResponseEntity<ApiErrorResponse> handleOrderNotFound(OrderNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ApiErrorResponse(404, "Not Found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(InvalidOrderStatusException.class)
+    public ResponseEntity<ApiErrorResponse> handleInvalidOrderStatus(InvalidOrderStatusException ex) {
+        return ResponseEntity.badRequest().body(new ApiErrorResponse(400, "Bad Request", ex.getMessage()));
+    }
+
     @ExceptionHandler(NoFieldsProvidedException.class)
     public ResponseEntity<?> handleNoFieldsProvided(NoFieldsProvidedException ex, HttpServletRequest request) {
         if ("PUT".equalsIgnoreCase(request.getMethod())) {

@@ -1,6 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.entity.*;
+import com.example.demo.exception.InvalidOrderStatusException;
+import com.example.demo.exception.OrderNotFoundException;
 import com.example.demo.repository.*;
 import java.util.List;
 import java.math.BigDecimal;
@@ -141,7 +143,7 @@ public class OrderService {
     @Transactional
     public Order updateOrderStatus(Long orderId, OrderStatus newStatus){
         //find the order by id or else throw exception
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        Order order = orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
         //validatestatustransition method calls if the status change is valid as given in the Enum'orderstatus'
         validateStatusTransition(order.getStatus(), newStatus);
         order.setStatus(newStatus);//updating the status
@@ -167,7 +169,7 @@ public class OrderService {
             case COLLECTED, CANCELLED -> false;
         };
             if(!valid){
-                throw new RuntimeException("Cannot change status from " + current + " to " + next);
+                throw new InvalidOrderStatusException("Cannot change status from " + current + " to " + next);
             }
 
     }
@@ -195,6 +197,6 @@ public class OrderService {
 
 
     public Order getOrderById(Long orderId){//can fetch a specific order through its id. and if no order is found it throws exception
-        return orderRepository.findById(orderId).orElseThrow(() -> new RuntimeException("Order not found"));
+        return orderRepository.findById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId));
     }
 }
