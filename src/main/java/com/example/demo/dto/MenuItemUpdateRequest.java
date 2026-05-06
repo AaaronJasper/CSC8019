@@ -40,6 +40,8 @@ public class MenuItemUpdateRequest {
     @Min(value = 1, message = "itemCount must be >= 1")
     private Integer itemCount;
 
+    private Boolean isAvailable;
+
     public MenuItemUpdateRequest() {}
 
     public String getName() {
@@ -88,6 +90,14 @@ public class MenuItemUpdateRequest {
 
     public void setItemCount(Integer itemCount) {
         this.itemCount = itemCount;
+    }
+
+    public Boolean getIsAvailable() {
+        return isAvailable;
+    }
+
+    public void setIsAvailable(Boolean isAvailable) {
+        this.isAvailable = isAvailable;
     }
 }
 

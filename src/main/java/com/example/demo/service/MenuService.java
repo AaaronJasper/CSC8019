@@ -57,10 +57,14 @@ public class MenuService {
             item.setItemCount(request.getItemCount());
             updated = true;
         }
+        if (request.getIsAvailable() != null) {
+            item.setIsAvailable(request.getIsAvailable());
+            updated = true;
+        }
 
         if (!updated) {
             throw new NoFieldsProvidedException(
-                    "At least one field must be provided for update (name/description/imgUrl/rating/category/itemCount)");
+                    "At least one field must be provided for update (name/description/imgUrl/rating/category/itemCount/isAvailable)");
         }
 
         return menuItemRepository.save(item);

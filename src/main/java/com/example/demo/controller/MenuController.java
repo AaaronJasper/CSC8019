@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.example.demo.dto.MenuItemRequest;
 import com.example.demo.dto.MenuItemUpdateRequest;
@@ -46,14 +47,23 @@ public class MenuController {
         return ResponseEntity.status(HttpStatus.CREATED).body(menuService.addMenuItem(request));
     }
 
-    // ===== PUT /api/menu/{id} =====
+    // ===== PUT /api/menu/{id} — form data =====
     @PutMapping(
             value = "/api/menu/{id}",
             consumes = { MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE }
     )
-    public ResponseEntity<?> updateMenuItem(
+    public ResponseEntity<?> updateMenuItemForm(
             @PathVariable Long id,
             @Valid @ModelAttribute MenuItemUpdateRequest request
+    ) {
+        return ResponseEntity.ok(menuService.updateMenuItem(id, request));
+    }
+
+    // ===== PUT /api/menu/{id} — JSON body =====
+    @PutMapping(value = "/api/menu/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateMenuItemJson(
+            @PathVariable Long id,
+            @Valid @RequestBody MenuItemUpdateRequest request
     ) {
         return ResponseEntity.ok(menuService.updateMenuItem(id, request));
     }
