@@ -5,6 +5,7 @@ import com.example.demo.repository.*;
 import java.util.List;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -69,9 +70,32 @@ public class OrderService {
      */
 
 
+    private void validatePickupTime(LocalTime pickupTime) {
+        LocalTime openingTime = LocalTime.of(openingHour, 0);
+        LocalTime closingTime = LocalTime.of(closingHour, 0);
+        LocalTime earliest = LocalTime.now().plusMinutes(15);
+
+        if (pickupTime.isBefore(openingTime) || pickupTime.isAfter(closingTime)) {
+            throw new RuntimeException(
+                "Pickup time must be between " + openingTime + " and " + closingTime);
+        }
+        if (pickupTime.isBefore(earliest)) {
+            throw new RuntimeException(
+                "Pickup time must be at least 15 minutes from now (earliest: " + earliest.withSecond(0).withNano(0) + ")");
+        }
+    }
+
     @Transactional//To make sure the entire method succeeds, or nothing is saved to eliminate half success confusing transaction in database
-    public Order placeOrder(User customer, String guestName, List<Long>menuItemIds, List<String>sizes, List<Integer>quantities){
+    public Order placeOrder(User customer, String guestName, List<Long>menuItemIds, List<String>sizes, List<Integer>quantities, LocalTime pickupTime){
+        if (pickupTime != null) {
+            validatePickupTime(pickupTime);
+        }
+
         Order order = new Order(customer, guestName, OrderStatus.NEW,BigDecimal.ZERO ,false);
+        if (pickupTime != null) {
+            order.setPickupTime(pickupTime);
+            order.setAdvanceOrder(true);
+        }
 
         BigDecimal total = BigDecimal.ZERO;
 

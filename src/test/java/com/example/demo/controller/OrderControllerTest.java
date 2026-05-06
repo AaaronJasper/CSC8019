@@ -73,7 +73,7 @@ class OrderControllerTest {
         req.setSizes(List.of("regular"));
         req.setQuantities(List.of(2));
 
-        when(orderService.placeOrder(eq(null), eq("Alice"), any(), any(), any()))
+        when(orderService.placeOrder(eq(null), eq("Alice"), any(), any(), any(), any()))
                 .thenReturn(sampleOrder(OrderStatus.NEW));
 
         mockMvc.perform(post("/api/orders/order")
@@ -93,7 +93,7 @@ class OrderControllerTest {
         req.setQuantities(List.of(1));
 
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(orderService.placeOrder(eq(user), any(), any(), any(), any()))
+        when(orderService.placeOrder(eq(user), any(), any(), any(), any(), any()))
                 .thenReturn(sampleOrder(OrderStatus.NEW));
 
         mockMvc.perform(post("/api/orders/order")
@@ -126,7 +126,7 @@ class OrderControllerTest {
         req.setSizes(List.of("regular"));
         req.setQuantities(List.of(1));
 
-        when(orderService.placeOrder(any(), any(), any(), any(), any()))
+        when(orderService.placeOrder(any(), any(), any(), any(), any(), any()))
                 .thenThrow(new RuntimeException("OldCoffee is not available"));
 
         assertThatThrownBy(() ->

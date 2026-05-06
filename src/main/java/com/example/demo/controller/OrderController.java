@@ -30,7 +30,7 @@ public class OrderController {
             customer = userRepository.findById(request.getCustomerId()).orElseThrow(() -> new RuntimeException("User not found"));
         }
 
-        Order order = orderService.placeOrder(customer, request.getGuestName(), request.getMenuItemIds(), request.getSizes(), request.getQuantities());
+        Order order = orderService.placeOrder(customer, request.getGuestName(), request.getMenuItemIds(), request.getSizes(), request.getQuantities(), request.getPickupTime());
         return ResponseEntity.ok(order);
     }
 

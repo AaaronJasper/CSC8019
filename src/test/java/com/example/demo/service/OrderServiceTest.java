@@ -7,11 +7,13 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,8 +36,8 @@ class OrderServiceTest {
     @BeforeEach
     void setUp() {
         ReflectionTestUtils.setField(orderService, "loyaltyBuyCount", 9);
-        ReflectionTestUtils.setField(orderService, "openingHour", 6);
-        ReflectionTestUtils.setField(orderService, "closingHour", 22);
+        ReflectionTestUtils.setField(orderService, "openingHour", 5);
+        ReflectionTestUtils.setField(orderService, "closingHour", 23);
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
@@ -74,7 +76,7 @@ class OrderServiceTest {
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        Order result = orderService.placeOrder(null, "Alice", List.of(1L), List.of("regular"), List.of(2));
+        Order result = orderService.placeOrder(null, "Alice", List.of(1L), List.of("regular"), List.of(2), null);
 
         assertThat(result.getTotalPrice()).isEqualByComparingTo("7.00");
         assertThat(result.getCustomer()).isNull();
@@ -88,7 +90,7 @@ class OrderServiceTest {
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        Order result = orderService.placeOrder(user, null, List.of(1L), List.of("regular"), List.of(1));
+        Order result = orderService.placeOrder(user, null, List.of(1L), List.of("regular"), List.of(1), null);
 
         assertThat(result.getCustomer()).isEqualTo(user);
     }
@@ -99,7 +101,7 @@ class OrderServiceTest {
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
         when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
-        Order result = orderService.placeOrder(null, "Bob", List.of(1L), List.of("LARGE"), List.of(1));
+        Order result = orderService.placeOrder(null, "Bob", List.of(1L), List.of("LARGE"), List.of(1), null);
 
         assertThat(result.getTotalPrice()).isEqualByComparingTo("4.50");
     }
@@ -113,7 +115,7 @@ class OrderServiceTest {
         when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
 
         Order result = orderService.placeOrder(null, "Bob",
-                List.of(1L, 2L), List.of("regular", "regular"), List.of(2, 3));
+                List.of(1L, 2L), List.of("regular", "regular"), List.of(2, 3), null);
 
         // 3.00*2 + 2.00*3 = 12.00
         assertThat(result.getTotalPrice()).isEqualByComparingTo("12.00");
@@ -124,7 +126,7 @@ class OrderServiceTest {
         when(menuItemRepository.findById(99L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() ->
-                orderService.placeOrder(null, "Guest", List.of(99L), List.of("regular"), List.of(1)))
+                orderService.placeOrder(null, "Guest", List.of(99L), List.of("regular"), List.of(1), null))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Item not found");
     }
@@ -135,7 +137,7 @@ class OrderServiceTest {
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
 
         assertThatThrownBy(() ->
-                orderService.placeOrder(null, "Guest", List.of(1L), List.of("regular"), List.of(1)))
+                orderService.placeOrder(null, "Guest", List.of(1L), List.of("regular"), List.of(1), null))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("not available");
     }
@@ -147,7 +149,7 @@ class OrderServiceTest {
         when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
 
         assertThatThrownBy(() ->
-                orderService.placeOrder(null, "Guest", List.of(1L), List.of("regular"), List.of(1)))
+                orderService.placeOrder(null, "Guest", List.of(1L), List.of("regular"), List.of(1), null))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("does not have size");
     }
@@ -334,5 +336,101 @@ class OrderServiceTest {
         assertThatThrownBy(() -> orderService.getOrderById(99L))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Order not found");
+    }
+
+    // ── pickupTime validation ─────────────────────────────────────────────────
+
+    @Test
+    void placeOrder_withValidPickupTime_setsPickupTimeAndAdvanceOrder() {
+        LocalTime fixedNow = LocalTime.of(10, 0);
+        LocalTime pickupTime = LocalTime.of(10, 30);
+
+        MenuItem item = menuItemWithRegularPrice("Latte", new BigDecimal("3.50"));
+        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        try (MockedStatic<LocalTime> mocked = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalTime::now).thenReturn(fixedNow);
+
+            Order result = orderService.placeOrder(null, "Alice", List.of(1L), List.of("regular"), List.of(1), pickupTime);
+
+            assertThat(result.getPickupTime()).isEqualTo(pickupTime);
+            assertThat(result.isAdvanceOrder()).isTrue();
+        }
+    }
+
+    @Test
+    void placeOrder_withNullPickupTime_doesNotSetAdvanceOrder() {
+        MenuItem item = menuItemWithRegularPrice("Latte", new BigDecimal("3.50"));
+        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        Order result = orderService.placeOrder(null, "Alice", List.of(1L), List.of("regular"), List.of(1), null);
+
+        assertThat(result.getPickupTime()).isNull();
+        assertThat(result.isAdvanceOrder()).isFalse();
+    }
+
+    @Test
+    void placeOrder_pickupTimeBeforeOpeningHours_throws() {
+        LocalTime fixedNow = LocalTime.of(10, 0);
+        LocalTime pickupTime = LocalTime.of(3, 0); // 3 AM — before 5 AM opening
+
+        try (MockedStatic<LocalTime> mocked = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalTime::now).thenReturn(fixedNow);
+
+            assertThatThrownBy(() ->
+                    orderService.placeOrder(null, "Guest", List.of(), List.of(), List.of(), pickupTime))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Pickup time must be between");
+        }
+    }
+
+    @Test
+    void placeOrder_pickupTimeAfterClosingHours_throws() {
+        LocalTime fixedNow = LocalTime.of(10, 0);
+        LocalTime pickupTime = LocalTime.of(23, 30); // 11:30 PM — after 11 PM closing
+
+        try (MockedStatic<LocalTime> mocked = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalTime::now).thenReturn(fixedNow);
+
+            assertThatThrownBy(() ->
+                    orderService.placeOrder(null, "Guest", List.of(), List.of(), List.of(), pickupTime))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("Pickup time must be between");
+        }
+    }
+
+    @Test
+    void placeOrder_pickupTimeTooEarlyFromNow_throws() {
+        LocalTime fixedNow = LocalTime.of(10, 0);
+        LocalTime pickupTime = LocalTime.of(10, 5); // only 5 min ahead — less than 15
+
+        try (MockedStatic<LocalTime> mocked = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalTime::now).thenReturn(fixedNow);
+
+            assertThatThrownBy(() ->
+                    orderService.placeOrder(null, "Guest", List.of(), List.of(), List.of(), pickupTime))
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessageContaining("at least 15 minutes from now");
+        }
+    }
+
+    @Test
+    void placeOrder_pickupTimeExactlyAtMinimum_succeeds() {
+        LocalTime fixedNow = LocalTime.of(10, 0);
+        LocalTime pickupTime = LocalTime.of(10, 15); // exactly 15 min ahead
+
+        MenuItem item = menuItemWithRegularPrice("Latte", new BigDecimal("3.50"));
+        when(menuItemRepository.findById(1L)).thenReturn(Optional.of(item));
+        when(orderRepository.save(any())).thenAnswer(i -> i.getArgument(0));
+
+        try (MockedStatic<LocalTime> mocked = mockStatic(LocalTime.class, CALLS_REAL_METHODS)) {
+            mocked.when(LocalTime::now).thenReturn(fixedNow);
+
+            Order result = orderService.placeOrder(null, "Alice", List.of(1L), List.of("regular"), List.of(1), pickupTime);
+
+            assertThat(result.getPickupTime()).isEqualTo(pickupTime);
+        }
     }
 }

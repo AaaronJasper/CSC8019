@@ -1,6 +1,8 @@
 package com.example.demo.dto;
 
+import java.time.LocalTime;
 import java.util.List;
+
 public class PlaceOrderRequest {
 
     private Long customerId;//for showing the customer ID when looged in, guest can be null here
@@ -8,6 +10,7 @@ public class PlaceOrderRequest {
     private List<Long>menuItemIds;//list of id of drink requested
     private List<String>sizes;//list of each drink's sizes
     private List<Integer>quantities;//each drink's quantity list
+    private LocalTime pickupTime; // optional, e.g. "14:30:00" — validated server-side
 
     public Long getCustomerId() {
         return customerId;
@@ -47,5 +50,13 @@ public class PlaceOrderRequest {
 
     public void setSizes(List<String> sizes) {
         this.sizes = sizes;
+    }
+
+    public LocalTime getPickupTime() {
+        return pickupTime;
+    }
+
+    public void setPickupTime(LocalTime pickupTime) {
+        this.pickupTime = pickupTime;
     }
 }
