@@ -25,11 +25,11 @@ public class DataSeeder {
             if (repo.count() > 0) {
                 // Patch imgUrl for any existing items that were seeded without one
                 java.util.Map<String, String> imgUrls = new java.util.HashMap<>();
-                imgUrls.put("Americano",           "https://iili.io/BslXAzv.jpg");
-                imgUrls.put("Americano with milk",  "https://iili.io/BslXTmJ.jpg");
-                imgUrls.put("Latte",               "https://iili.io/BslXxdF.jpg");
-                imgUrls.put("Cappuccino",           "https://iili.io/BslXIea.jpg");
-                imgUrls.put("Hot Chocolate",        "https://iili.io/BslXng1.jpg");
+                imgUrls.put("Americano",           "https://iili.io/BslXIea.jpg");
+                imgUrls.put("Americano with milk",  "https://iili.io/BslXxdF.jpg");
+                imgUrls.put("Latte",               "https://iili.io/BtECodb.md.jpg");
+                imgUrls.put("Cappuccino",           "https://iili.io/BtERkvt.md.jpg");
+                imgUrls.put("Hot Chocolate",        "https://iili.io/BslXAzv.jpg");
                 imgUrls.put("Mocha",               "https://iili.io/BslXC0P.jpg");
                 imgUrls.put("Mineral Water",        "https://iili.io/BslXz5g.jpg");
 
@@ -44,7 +44,7 @@ public class DataSeeder {
             MenuItem americano = new MenuItem(
                     "Americano",
                     "Classic black coffee",
-                    "https://iili.io/BslXAzv.jpg",
+                    "https://iili.io/BslXIea.jpg",
                     new BigDecimal("4.5"),
                     true,
                     "Coffee",
@@ -56,7 +56,7 @@ public class DataSeeder {
             MenuItem americanoMilk = new MenuItem(
                     "Americano with milk",
                     "Americano with a splash of milk",
-                    "https://iili.io/BslXTmJ.jpg",
+                    "https://iili.io/BslXxdF.jpg",
                     new BigDecimal("4.5"),
                     true,
                     "Coffee",
@@ -68,7 +68,7 @@ public class DataSeeder {
             MenuItem latte = new MenuItem(
                     "Latte",
                     "Milk coffee",
-                    "https://iili.io/BslXxdF.jpg",
+                    "https://iili.io/BtECodb.md.jpg",
                     new BigDecimal("4.6"),
                     true,
                     "Coffee",
@@ -80,7 +80,7 @@ public class DataSeeder {
             MenuItem cappuccino = new MenuItem(
                     "Cappuccino",
                     "Foamy milk coffee",
-                    "https://iili.io/BslXIea.jpg",
+                    "https://iili.io/BtERkvt.md.jpg",
                     new BigDecimal("4.6"),
                     true,
                     "Coffee",
@@ -92,7 +92,7 @@ public class DataSeeder {
             MenuItem hotChocolate = new MenuItem(
                     "Hot Chocolate",
                     "Rich chocolate drink",
-                    "https://iili.io/BslXng1.jpg",
+                    "https://iili.io/BslXAzv.jpg",
                     new BigDecimal("4.4"),
                     true,
                     "Drink",
